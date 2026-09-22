@@ -10,6 +10,7 @@ import re
 import cv2
 import pickle
 import importlib
+import time
 import numpy as np
 from collections import defaultdict
 from datetime import datetime
@@ -249,7 +250,21 @@ def get_nse_sector(page, symbol):
 
 def get_nse_deal_analysis(page):
     print("🌐 Fetching NSE large-deal stocks...")
-    page.goto(NSE_LARGE_DEALS_URL, wait_until="domcontentloaded")
+    for attempt in range(1, 4):
+        try:
+            page.goto(
+                NSE_LARGE_DEALS_URL,
+                wait_until="domcontentloaded",
+                timeout=60000,
+            )
+            break
+        except Exception as error:
+            if attempt == 3:
+                raise RuntimeError(
+                    "NSE large-deals page could not be loaded after 3 attempts."
+                ) from error
+            print(f"⚠️ NSE navigation failed (attempt {attempt}/3): {error}")
+            time.sleep(3 * attempt)
     try:
         page.wait_for_function(
             """
@@ -790,7 +805,7 @@ def main(mode="chartink"):
 
         browser = p.chromium.launch(
             headless=HEADLESS,
-            args=["--start-maximized"]
+            args=["--start-maximized", "--disable-http2"]
         )
 
         context = browser.new_context(no_viewport=True)
