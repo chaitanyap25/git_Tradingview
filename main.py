@@ -768,8 +768,21 @@ def save_cookies(context):
         pickle.dump(context.cookies(), f)
 
 def load_cookies(context):
-    with open(COOKIES_FILE, "rb") as f:
-        context.add_cookies(pickle.load(f))
+    try:
+        with open(COOKIES_FILE, "rb") as cookies_file:
+            cookies = pickle.load(cookies_file)
+    except (EOFError, pickle.UnpicklingError) as error:
+        raise RuntimeError(
+            "TradingView cookie file is empty or invalid. Recreate "
+            "TRADINGVIEW_COOKIES_B64 from a valid tradingview_cookies.pkl."
+        ) from error
+
+    if not isinstance(cookies, list) or not cookies:
+        raise RuntimeError(
+            "TradingView cookie file contains no cookies. Recreate "
+            "TRADINGVIEW_COOKIES_B64 from a valid tradingview_cookies.pkl."
+        )
+    context.add_cookies(cookies)
 
 # ================== MAIN ==================
 def main(mode="chartink"):

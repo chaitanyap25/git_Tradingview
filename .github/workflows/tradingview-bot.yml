@@ -32,7 +32,26 @@ jobs:
         shell: bash
         env:
           TRADINGVIEW_COOKIES_B64: ${{ secrets.TRADINGVIEW_COOKIES_B64 }}
-        run: printf '%s' "$TRADINGVIEW_COOKIES_B64" | base64 --decode > tradingview_cookies.pkl
+        run: |
+          set -euo pipefail
+          if [ -z "$TRADINGVIEW_COOKIES_B64" ]; then
+            echo "TRADINGVIEW_COOKIES_B64 secret is empty or missing."
+            exit 1
+          fi
+          printf '%s' "$TRADINGVIEW_COOKIES_B64" | base64 --decode > tradingview_cookies.pkl
+          if [ ! -s tradingview_cookies.pkl ]; then
+            echo "TRADINGVIEW_COOKIES_B64 decoded to an empty file."
+            exit 1
+          fi
+          python - <<'PY'
+          import pickle
+
+          with open("tradingview_cookies.pkl", "rb") as cookies_file:
+              cookies = pickle.load(cookies_file)
+          if not isinstance(cookies, list) or not cookies:
+              raise SystemExit("TradingView cookie secret is not a non-empty cookie list.")
+          print(f"Restored {len(cookies)} TradingView cookies.")
+          PY
 
       - name: Run bot
         run: python main.py
