@@ -1,0 +1,7 @@
+__pycache__/
+*.py[cod]
+.venv/
+screenshots/*
+cropped/*
+cards/*
+tradingview_cookies.pkl

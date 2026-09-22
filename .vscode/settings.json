@@ -1,0 +1,13 @@
+{
+    "python-envs.defaultEnvManager": "ms-python.python:system",
+    "chat.tools.terminal.autoApprove": {
+        "/^Push-Location 'c:\\\\Chaitanya\\\\Automation\\\\Tradingview'; & 'C:\\\\Users\\\\Chaitanya\\\\AppData\\\\Local\\\\Python\\\\pythoncore-3\\.14-64\\\\python\\.exe' -c \"import main; print\\('DETECTED=', main\\.detect_buy\\('screenshots/HDFCLIFE\\.png'\\)\\)\"; Pop-Location$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^& 'C:\\\\Users\\\\Chaitanya\\\\AppData\\\\Local\\\\Python\\\\pythoncore-3\\.14-64\\\\python\\.exe' -m py_compile \\.\\\\main\\.py$/": {
+            "approve": true,
+            "matchCommandLine": true
+        }
+    }
+}
